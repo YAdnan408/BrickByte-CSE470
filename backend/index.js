@@ -45,7 +45,9 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
+import listingRouter from './routes/listing.route.js';
 import cookieParser from 'cookie-parser';
+
 dotenv.config();
 
 mongoose
@@ -81,6 +83,7 @@ app.listen(3000, () => {
 
 app.use('/backend/user', userRouter);
 app.use('/backend/auth', authRouter);
+app.use('app/listing', listingRouter);
 
 
 
