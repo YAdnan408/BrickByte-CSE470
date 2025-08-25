@@ -83,7 +83,7 @@ app.listen(3000, () => {
 
 app.use('/backend/user', userRouter);
 app.use('/backend/auth', authRouter);
-app.use('app/listing', listingRouter);
+app.use('/backend/listing', listingRouter);
 
 
 
