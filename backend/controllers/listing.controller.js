@@ -1,14 +1,34 @@
 import Listing from '../models/listing.model.js';
+import { errorHandler } from '../utils/error.js';
 
 export const createListing = async (req, res, next) => {
-
     try {
-        const listing = await Listing.create(req.body);
+        console.log('Create listing request received');
+        console.log('Files:', req.files);
+        console.log('Body:', req.body);
+        console.log('User:', req.user);
+
+        // Get image URLs from uploaded files (if any) - with full URL
+        const imageUrls = req.files ? req.files.map(file => `http://localhost:3000/backend/uploads/listings/${file.filename}`) : [];
+        console.log('Generated image URLs:', imageUrls);
+        
+        // Create listing with form data and image URLs
+        const listingData = {
+            ...req.body,
+            imageUrls: imageUrls,
+            userRef: req.user.id
+        };
+
+        console.log('Listing data to save:', listingData);
+
+        const listing = await Listing.create(listingData);
+        console.log('Listing created successfully:', listing._id);
+        
         return res.status(201).json(listing);
     } catch (error) {
+        console.error('Create listing error:', error);
         next(error);
     }
-
 }
 
 export const deleteListing = async (req, res, next) => {
@@ -41,9 +61,20 @@ export const updateListing = async (req, res, next) => {
   }
 
   try {
+    // Get new image URLs from uploaded files (if any)
+    const newImageUrls = req.files ? req.files.map(file => `/backend/uploads/listings/${file.filename}`) : [];
+    
+    // If new images are uploaded, use them; otherwise keep existing ones
+    const imageUrls = newImageUrls.length > 0 ? newImageUrls : listing.imageUrls;
+    
+    const updatedData = {
+      ...req.body,
+      imageUrls: imageUrls
+    };
+
     const updatedListing = await Listing.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updatedData,
       { new: true }
     );
     res.status(200).json(updatedListing);

@@ -2,17 +2,34 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
-import SwiperCore from 'swiper';
-import 'swiper/css/bundle';
+import 'swiper/css';
+import 'swiper/css/navigation';
 import ListingItem from '../components/ListingItem';
+import { getFullImageUrl } from '../utils/imageUtils';
 
 export default function Home() {
   const [offerListings, setOfferListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
-  SwiperCore.use([Navigation]);
+  const [sliderListings, setSliderListings] = useState([]);
+  
   console.log(offerListings);
   useEffect(() => {
+    const fetchSliderListings = async () => {
+      try {
+        // Fetch recent listings with images for slider
+        const res = await fetch('/backend/listing/get?limit=6');
+        const data = await res.json();
+        // Filter listings that have images
+        const listingsWithImages = data.filter(listing => 
+          listing.imageUrls && listing.imageUrls.length > 0
+        );
+        setSliderListings(listingsWithImages);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const fetchOfferListings = async () => {
       try {
         const res = await fetch('/backend/listing/get?offer=true&limit=4');
@@ -43,6 +60,8 @@ export default function Home() {
         console.log(error);
       }
     };
+    
+    fetchSliderListings();
     fetchOfferListings();
   }, []);
   return (
@@ -69,18 +88,17 @@ export default function Home() {
       </div>
 
       {/* swiper */}
-      <Swiper navigation>
-        {offerListings &&
-          offerListings.length > 0 &&
-          offerListings.map((listing) => (
-            <SwiperSlide>
+      <Swiper navigation modules={[Navigation]}>
+        {sliderListings &&
+          sliderListings.length > 0 &&
+          sliderListings.map((listing) => (
+            <SwiperSlide key={listing._id}>
               <div
                 style={{
-                  background: `url(${listing.imageUrls[0]}) center no-repeat`,
+                  background: `url(${getFullImageUrl(listing.imageUrls[0])}) center no-repeat`,
                   backgroundSize: 'cover',
                 }}
                 className='h-[500px]'
-                key={listing._id}
               ></div>
             </SwiperSlide>
           ))}

@@ -43,10 +43,17 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
+import uploadRouter from './routes/upload.route.js';
 import cookieParser from 'cookie-parser';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -77,6 +84,9 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+// Serve static files from uploads directory
+app.use('/backend/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.listen(3000, () => {
   console.log('Server is running on port 3000!');
 });
@@ -84,6 +94,7 @@ app.listen(3000, () => {
 app.use('/backend/user', userRouter);
 app.use('/backend/auth', authRouter);
 app.use('/backend/listing', listingRouter);
+app.use('/backend/upload', uploadRouter);
 
 
 

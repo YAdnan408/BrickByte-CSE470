@@ -63,6 +63,12 @@ export const updateUser = async (req, res, next) => {
       req.body.password = bcryptjs.hashSync(req.body.password, 10);
     }
 
+    // Handle avatar upload if file is provided
+    let avatarUrl = req.body.avatar; // Keep existing avatar by default
+    if (req.file) {
+      avatarUrl = `http://localhost:3000/backend/uploads/avatars/${req.file.filename}`;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
@@ -70,7 +76,7 @@ export const updateUser = async (req, res, next) => {
           username: req.body.username,
           email: req.body.email,
           password: req.body.password,
-          avatar: req.body.avatar,
+          avatar: avatarUrl,
         },
       },
       { new: true }
