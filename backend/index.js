@@ -51,7 +51,6 @@ import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import uploadRouter from './routes/upload.route.js';
 import cookieParser from 'cookie-parser';
-import path from path;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
