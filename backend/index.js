@@ -51,6 +51,7 @@ import authRouter from './routes/auth.route.js';
 import listingRouter from './routes/listing.route.js';
 import uploadRouter from './routes/upload.route.js';
 import cookieParser from 'cookie-parser';
+import path from path;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,6 +66,8 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
+  const __dirname = path.resolve()
 
 // console.log('MONGO URI:', process.env.MONGO);
 // console.log('JWT_SECRET:', process.env.JWT_SECRET);
@@ -95,6 +98,13 @@ app.use('/backend/user', userRouter);
 app.use('/backend/auth', authRouter);
 app.use('/backend/listing', listingRouter);
 app.use('/backend/upload', uploadRouter);
+
+app.use(express.static(path.join(__dirname, '/frontend/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'dist', 'index.html'));
+})
+
 
 
 
